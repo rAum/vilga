@@ -43,3 +43,9 @@ install(FILES
 
 export(TARGETS vilga FILE vilgaTargets.cmake)
 export(PACKAGE vilga)
+
+#############
+# just for temporary testing
+
+add_executable(vilga_testbed testbed.cpp)
+target_link_libraries(vilga_testbed PRIVATE vilga)
