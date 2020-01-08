@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(vilga VERSION 0.0.0 LANGUAGES CXX)
 
+add_subdirectory(external)
+
 add_subdirectory(vilga)
 
 set(CPACK_PACKAGE_VENDOR "vilga")
