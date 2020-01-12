@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(vilga VERSION 0.0.0 LANGUAGES CXX)
 
+include(cmake/FindZeroMQ.cmake)
+find_package(Threads REQUIRED)
+
 add_subdirectory(external)
 
 add_subdirectory(vilga)
@@ -21,5 +24,6 @@ set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}_${PROJECT_VERSION_MAJOR}.${PROJECT_
 set(CPACK_DEBIAN_PACKAGE_LICENSE "MIT")
 set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_CURRENT_LIST_DIR}/LICENSE)
 set(CPACK_RESOURCE_FILE_README ${CMAKE_CURRENT_LIST_DIR}/README.md)
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libzmq3")
 
 include(CPack)
