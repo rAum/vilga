@@ -1,10 +1,12 @@
 
 add_library(vilga
-        src/vilga.cpp
+    src/vilga.cpp
+    src/detail/backend.cpp
+    src/detail/backend_impl.cpp
 )
 
-target_compile_features(vilga INTERFACE cxx_std_11)
-target_compile_features(vilga PRIVATE cxx_std_14)
+target_compile_features(vilga INTERFACE cxx_std_11 cxx_variadic_templates cxx_strong_enums cxx_static_assert)
+target_compile_features(vilga PRIVATE cxx_std_14 cxx_thread_local)
 
 add_library(vilga::vilga ALIAS vilga)
 
@@ -14,6 +16,12 @@ target_include_directories(vilga PUBLIC
 )
 
 target_include_directories(vilga PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/include/>)
+
+target_link_libraries(vilga PRIVATE
+        Threads::Threads
+        libzmq
+        cereal
+)
 
 set_target_properties(vilga PROPERTIES
         CXX_VISIBILITY_PRESET hidden
@@ -49,3 +57,6 @@ export(PACKAGE vilga)
 
 add_executable(vilga_testbed testbed.cpp)
 target_link_libraries(vilga_testbed PRIVATE vilga)
+
+###################
+add_subdirectory(tests)
