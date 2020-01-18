@@ -3,6 +3,9 @@
 #include <cmath>
 #include <vilga/vilga.h>
 #include <zmq.hpp>
+#include <thread>
+
+zmq::context_t test_context(1);
 
 TEST_CASE("Basic portal construction test") {
   vilga::portal_settings settings;
@@ -17,8 +20,7 @@ TEST_CASE("Basic tests for closed portal") {
 }
 
 TEST_CASE("Basic tests for portal streaming") {
-  zmq::context_t c(1);
-  zmq::socket_t s(c, ZMQ_SUB);
+  zmq::socket_t s(test_context, ZMQ_SUB);
   s.setsockopt(ZMQ_SUBSCRIBE, "", 0);
   s.connect("tcp://127.0.0.1:3349");
 
@@ -26,21 +28,23 @@ TEST_CASE("Basic tests for portal streaming") {
   settings.mode = vilga::portal_settings::Mode::STREAM;
   vilga::portal<int> portal(settings);
 
+  // wait for subscriber connection to happen before publishing messages.
+  // otherwise the messages are dropped :(
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+
   const int send_messages = 100;
-  for (int i = 0; i < send_messages / 2; ++i) {
+  for (int i = 0; i < send_messages; ++i) {
     portal.send(vilga::Val<float>("sin(i)", std::sin(static_cast<float>(i)/M_PI_2f32)));
-    portal.send(VILGA_VAL(i));
   }
 
   auto begin = std::chrono::steady_clock::now();
   auto timeout = std::chrono::seconds(1);
-  int recieived_messages = 0;
+  int received_messages = 0;
   while ((std::chrono::steady_clock::now() - begin) < timeout) {
     zmq::message_t m;
     if (s.recv(&m, ZMQ_NOBLOCK)) {
-      ++recieived_messages;
-      if (recieived_messages == 200) break;
+      ++received_messages;
     }
   }
-  CHECK_EQ(recieived_messages, send_messages);
+  CHECK_EQ(received_messages, send_messages);
 }

@@ -34,12 +34,11 @@ public:
     }
     vilga_detail::data dt;
     spell.cast_into(dt);
-    backend_.consume(std::move(dt));
+    vilga_detail::backend_instance.consume(std::move(dt));
   }
 
 private:
   portal_settings portal_settings_;
-  vilga_detail::backend backend_;
 };
 
 }  // namespace vilga

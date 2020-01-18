@@ -8,17 +8,17 @@
 namespace vilga_detail VILGA_EXPORT {
 
 class data;
+struct vilga_backend_initializer;
 
 /**
  * Single entry point which routes data into destinations.
  */
 class backend {
-public:
+private:
   backend();
   ~backend();
-
-  backend(backend&& other) noexcept;
-  void operator=(backend&& other) noexcept;
+public:
+  friend struct vilga_backend_initializer;
 
   void consume(data&& data);
 
@@ -26,6 +26,15 @@ private:
   struct impl;
   std::unique_ptr<backend::impl> impl_;
 };
+
+/// global reference to backend
+extern backend& backend_instance;
+
+/// static backend initializer for every translation unit
+static struct vilga_backend_initializer {
+  vilga_backend_initializer() noexcept;
+  ~vilga_backend_initializer() noexcept;
+} vilga_backend_init;
 
 }  // namespace vilga_detail
 

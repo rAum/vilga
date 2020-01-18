@@ -20,7 +20,9 @@ backend::impl::impl()
   killer_socket_.connect("tcp://127.0.0.1:3348");
   publish_socket_.bind("tcp://127.0.0.1:3349");
 
-  // late subscriber joiner sleep, this is unfortunate but otherwise it's tricky to not drop messages
+  // late subscriber joiner sleep, this is unfortunate but otherwise it's tricky to not drop messages.
+  // probably should start with PAUSE and wait for command to start and maybe even
+  // setup publisher... need to think more about it.
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   /// FIXME: this is a very dirty & quick draft
