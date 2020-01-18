@@ -3,6 +3,12 @@
 
 namespace vilga_detail {
 
+//  If a publisher has no connected subscribers, then it will simply drop all messages
+//   so maybe it should be switched to more reliable req/rep .. but this will hurt performance..
+//  Assuming TCP: when subscriber is slow, messages will queue up on the publisher
+//    this is not great either, because it can put down publisher..
+//  Topic filtering happens at the subscriber side, not the publisher side AFAIK
+//    so no reason to use it I think..
 backend::impl::impl()
   : context_(1)
   , sink_socket_(context_, ZMQ_PULL)
@@ -11,8 +17,11 @@ backend::impl::impl()
   , killer_socket_(context_, ZMQ_REQ) {
   sink_socket_.bind(kGathererTopic);
   cmd_socket_.bind("tcp://127.0.0.1:3348");
-  publish_socket_.bind("tcp://*:3349");
   killer_socket_.connect("tcp://127.0.0.1:3348");
+  publish_socket_.bind("tcp://127.0.0.1:3349");
+
+  // late subscriber joiner sleep, this is unfortunate but otherwise it's tricky to not drop messages
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   /// FIXME: this is a very dirty & quick draft
   backend_operation_ = std::thread([this]() {
@@ -54,14 +63,15 @@ backend::impl::impl()
 
       if (items[1].revents & ZMQ_POLLIN) {
         zmq::message_t sink_message;
-        while (sink_socket_.recv(&sink_message, ZMQ_NOBLOCK)) {
-          std::cout << "pushing message from sink to publisher [" << sink_message.size() << "] " << std::endl;
-          if (!publish_socket_.send(sink_message, ZMQ_NOBLOCK)) {
-            // failed to send. let's retry..
-            std::this_thread::sleep_for(std::chrono::nanoseconds(30));
-            if (!publish_socket_.send(sink_message, ZMQ_NOBLOCK)) {
-              std::cout << "Message dropped. Sorry." << std::endl;
-            }
+        sink_socket_.recv(&sink_message);
+        publish_socket_.send(sink_message);
+        // we might have more messages... try to fetch at most 31 messages before polling
+        for (int i = 0; i < 31; ++i) {
+          zmq::message_t tmp;
+          if (sink_socket_.recv(&tmp, ZMQ_NOBLOCK)) {
+            publish_socket_.send(sink_message);
+          } else {
+            break; // okay! no more for now, time to poll
           }
         }
       }
