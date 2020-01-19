@@ -38,14 +38,13 @@ backend::impl::impl()
     items[1].fd = 0;
     items[1].events = ZMQ_POLLIN;
 
-    zmq::message_t cmd_message;
     do {
       int status = zmq::poll(items.data(), items.size(), std::chrono::milliseconds(2));
       if (status < 0) break;
-      cmd_message.rebuild(16);
 
       if (items[0].revents & ZMQ_POLLIN) {
         bool die = false;
+        zmq::message_t cmd_message;
         while (cmd_socket_.recv(&cmd_message, ZMQ_NOBLOCK)) {
           std::cout << "Got command of size " << cmd_message.size() << std::endl;
           if (cmd_message.size() == 4) {
@@ -84,8 +83,6 @@ backend::impl::impl()
 }
 
 backend::impl::~impl() {
-  consume_sockets_.die();
-  std::this_thread::sleep_for(std::chrono::milliseconds(4));
   zmq_send_const((void*)killer_socket_, "DIE", 4, 0);
   zmq::message_t ok(4);
   killer_socket_.recv(&ok);
