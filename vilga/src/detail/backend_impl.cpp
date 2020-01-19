@@ -28,12 +28,12 @@ backend::impl::impl()
   /// FIXME: this is a very dirty & quick draft
   backend_operation_ = std::thread([this]() {
     std::array<zmq::pollitem_t, 2> items; // NOLINT
-    items[0].socket = cmd_socket_;
+    items[0].socket = (void*)cmd_socket_;
     items[0].events = 0;
     items[0].fd = 0;
     items[0].events = ZMQ_POLLIN;
 
-    items[1].socket = sink_socket_;
+    items[1].socket = (void*)sink_socket_;
     items[1].events = 0;
     items[1].fd = 0;
     items[1].events = ZMQ_POLLIN;
@@ -86,7 +86,7 @@ backend::impl::impl()
 backend::impl::~impl() {
   consume_sockets_.die();
   std::this_thread::sleep_for(std::chrono::milliseconds(4));
-  zmq_send_const(killer_socket_, "DIE", 4, 0);
+  zmq_send_const((void*)killer_socket_, "DIE", 4, 0);
   zmq::message_t ok(4);
   killer_socket_.recv(&ok);
   killer_socket_.close();
