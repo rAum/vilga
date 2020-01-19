@@ -1,4 +1,4 @@
-# vilga
+# vilga [![Action Status](https://github.com/rAum/vilga/workflows/vilga%20CI/badge.svg)](https://github.com/rAum/vilga/actions)
 
 **under development, nothing usable yet and it's highly experimental code**
 
