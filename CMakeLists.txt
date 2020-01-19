@@ -4,6 +4,8 @@ project(vilga VERSION 0.0.0 LANGUAGES CXX)
 include(cmake/FindZeroMQ.cmake)
 find_package(Threads REQUIRED)
 
+enable_testing()
+
 add_subdirectory(external)
 
 add_subdirectory(vilga)
