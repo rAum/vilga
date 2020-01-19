@@ -6,7 +6,7 @@
 #include <zmq.hpp>
 #include <vilga/detail/backend.hpp>
 #include <vilga/detail/data.hpp>
-#include <vilga_impl/thread_local_sockets.hpp>
+#include <vilga_impl/autoconnect_socket.hpp>
 
 namespace vilga_detail {
 
@@ -17,12 +17,13 @@ public:
 
   void operator=(const impl&) = delete;
 
-  // TODO: think about multiple data.. would be handy to get this_thread_socket exactly once
-  // for multiple parts
+  /**
+   * Passes data into other thread to reduce blocking in current thread and allow async io.
+   * @param data
+   */
   void consume(data&& data) {
-    auto this_thread_socket = consume_sockets_.get_socket_for_this_thread(context_);
-    if (!this_thread_socket)
-      return; // probably warning..
+    // TODO: investigate later lock-free MPSC, it probably could be faster than zmq
+    thread_local autoconnect_socket this_thread_socket(context_);
     // It still is going to block if the destination socket is full/not listening...
     // for now it seems as a good prototype strategy.
     // Data is going to be copied here as we cross threads boundary
@@ -31,7 +32,6 @@ public:
 
 private:
   zmq::context_t context_;
-  thread_local_sockets consume_sockets_;
   zmq::socket_t sink_socket_;
   zmq::socket_t cmd_socket_;
   zmq::socket_t publish_socket_;
