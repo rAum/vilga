@@ -32,9 +32,7 @@ public:
     if (portal_settings_.mode == portal_settings::Mode::OFF) {
       return;
     }
-    vilga_detail::data dt;
-    spell.cast_into(dt);
-    vilga_detail::backend_instance.consume(std::move(dt));
+    just_send(spell);
   }
 
   void set_mode(portal_settings::Mode mode) noexcept {
@@ -46,6 +44,11 @@ public:
   }
 
 private:
+  void just_send(const vilga_detail::portal_spell& spell) {
+    vilga_detail::data dt;
+    spell.cast_into(dt);
+    vilga_detail::backend_instance.consume(std::move(dt));
+  }
   portal_settings portal_settings_;
 };
 
