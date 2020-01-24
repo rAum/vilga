@@ -16,7 +16,7 @@ TEST_CASE("Basic tests for closed portal") {
   vilga::portal_settings settings;
   settings.mode = vilga::portal_settings::Mode::OFF;
   vilga::portal<int> portal(settings);
-  portal.send(VILGA_VAL(42));
+  portal.send(42);
 }
 
 TEST_CASE("Basic tests for portal streaming") {
@@ -34,7 +34,7 @@ TEST_CASE("Basic tests for portal streaming") {
 
   const int send_messages = 100;
   for (int i = 0; i < send_messages; ++i) {
-    portal.send(vilga::Val<float>("sin(i)", std::sin(static_cast<float>(i)/M_PI_2f32)));
+    portal.send(std::sin(static_cast<float>(i)/M_PI_2f32));
   }
 
   auto begin = std::chrono::steady_clock::now();
@@ -69,7 +69,7 @@ TEST_CASE("Multithreaded test for portal streaming") {
       vilga::portal<int> portal(settings);
 
       for (int i = 0; i < send_messages; ++i) {
-        portal.send(vilga::Val<int>("i", i));
+        portal.send(i);
       }
     });
   }

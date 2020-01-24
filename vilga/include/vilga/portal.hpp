@@ -37,6 +37,14 @@ public:
     vilga_detail::backend_instance.consume(std::move(dt));
   }
 
+  void set_mode(portal_settings::Mode mode) noexcept {
+    portal_settings_.mode = mode;
+  }
+
+  portal_settings::Mode get_mode() const noexcept {
+    return portal_settings_.mode;
+  }
+
 private:
   portal_settings portal_settings_;
 };
