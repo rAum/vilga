@@ -41,11 +41,15 @@ public:
    * @param type a const reference to data
    */
   template<class T, std::enable_if_t<std::is_object<T>::value, int> = 0>
-  constexpr portal_spell(const T& type) noexcept { // NOLINT
-    new(&mana_source_) spell<T>(type);
+  constexpr portal_spell(const T& value) noexcept { // NOLINT
+    new(&mana_source_) spell<T>(value);
+    //std::cout << "constructing " << value << std::endl;
   }
 
-  ~portal_spell() = default;
+  ~portal_spell() noexcept {
+    auto& magic_spell = reinterpret_cast<spell_contract&>(mana_source_);
+    (&magic_spell)->~spell_contract();
+  }
 
   /**
    * Casts a spell, transforming object into vilga data.
@@ -58,6 +62,7 @@ public:
 
 private:
   struct spell_contract {
+    virtual ~spell_contract() = default;
     virtual void cast(vilga_detail::data& out) const = 0;
   };
 
