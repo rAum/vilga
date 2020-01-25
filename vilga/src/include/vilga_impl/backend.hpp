@@ -26,8 +26,11 @@ public:
     thread_local autoconnect_socket this_thread_socket(context_);
     // It still is going to block if the destination socket is full/not listening...
     // for now it seems as a good prototype strategy.
+    // This will steal pointer.
+    zmq::message_t msg(data.data_.bytes_.release(), data.data_.size_, data.data_.free_mem);
+    this_thread_socket->send(msg, ZMQ_NOBLOCK);
     // Data is going to be copied here as we cross threads boundary
-    this_thread_socket->send(data.data_.bytes_.get(), data.data_.size_, ZMQ_NOBLOCK);
+    //this_thread_socket->send(data.data_.bytes_.get(), data.data_.size_, ZMQ_NOBLOCK);
   }
 
 private:

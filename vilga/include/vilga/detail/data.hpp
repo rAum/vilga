@@ -12,6 +12,11 @@ class memory_block_t {
 public:
   std::size_t size_ = 0;
   std::unique_ptr<std::uint8_t[]> bytes_;
+
+  static void free_mem(void* data, void*) noexcept {
+    std::uint8_t* first = static_cast<std::uint8_t*>(data);
+    delete[] first;
+  }
 };
 
 enum class Encoding : std::uint8_t {
