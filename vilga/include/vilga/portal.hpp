@@ -7,7 +7,7 @@
 #include <vilga/detail/data.hpp>
 #include <vilga/detail/portal_spell.hpp>
 
-namespace vilga VILGA_EXPORT {
+namespace vilga {
 
 /**
  * Stores some global settings for the portal
@@ -23,7 +23,7 @@ struct portal_settings {
  * Main portal class which provides interface for sending data, similar to logger.
  */
 template <class Destination>
-class portal {
+class VILGA_EXPORT portal {
 public:
   explicit portal(portal_settings settings) : portal_settings_(settings) {
   }

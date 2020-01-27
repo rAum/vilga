@@ -5,7 +5,7 @@
 #include <memory>
 #include <vilga/detail/macros.hpp>
 
-namespace vilga_detail VILGA_EXPORT {
+namespace vilga_detail {
 
 class data;
 struct vilga_backend_initializer;
@@ -13,7 +13,7 @@ struct vilga_backend_initializer;
 /**
  * Single entry point which routes data into destinations.
  */
-class backend {
+class VILGA_EXPORT backend {
 private:
   backend();
   ~backend();
@@ -31,7 +31,7 @@ private:
 extern backend& backend_instance;
 
 /// static backend initializer for every translation unit
-static struct vilga_backend_initializer {
+static struct VILGA_EXPORT vilga_backend_initializer {
   vilga_backend_initializer() noexcept;
   ~vilga_backend_initializer() noexcept;
 } vilga_backend_init;
