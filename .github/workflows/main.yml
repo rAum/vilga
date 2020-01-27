@@ -40,6 +40,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
+      - name: Install zmq
+        id: zmq_installation
+        shell: bash
+        run: sudo apt update && sudo apt install -y libzmq3-dev
 
       - name: Download Ninja and CMake
         id: cmake_and_ninja
@@ -58,7 +62,6 @@ jobs:
             set(ninja_suffix "linux.zip")
             set(cmake_suffix "Linux-x86_64.tar.gz")
             set(cmake_dir "cmake-${cmake_version}-Linux-x86_64/bin")
-            execute_process(COMMAND sudo apt-get install -y libzmq3-dev)
           elseif ("${{ runner.os }}" STREQUAL "macOS")
             set(ninja_suffix "mac.zip")
             set(cmake_suffix "Darwin-x86_64.tar.gz")
