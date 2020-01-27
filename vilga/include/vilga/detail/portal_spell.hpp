@@ -16,7 +16,7 @@ class data;
 /**
  * This class is an interface which allows to send any data by portal
  */
-class portal_spell {
+class VILGA_EXPORT portal_spell {
 public:
   template<class>
   friend class vilga::portal;

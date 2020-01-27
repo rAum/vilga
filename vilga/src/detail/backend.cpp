@@ -4,7 +4,6 @@
 #include <type_traits>
 #include <vilga_impl/backend.hpp>
 #include <vilga/detail/data.hpp>
-#include <iostream>
 
 namespace vilga_detail {
 
@@ -19,14 +18,10 @@ static typename std::aligned_storage<sizeof(backend), alignof(backend)>::type ba
 backend& backend_instance = reinterpret_cast<backend&>(backend_memory);
 
 backend::backend() {
-  // this is a place when it would be possible to inject alternative implementation
-  std::cout << "backend created" << std::endl;
   impl_ = std::make_unique<backend::impl>();
 }
 
-backend::~backend() {
-  std::cout << "backend destroyed" << std::endl;
-}
+backend::~backend() = default;
 
 void backend::consume(data&& data) {
   impl_->consume(std::move(data));

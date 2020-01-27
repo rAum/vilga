@@ -6,7 +6,7 @@
 #include <string>
 #include <vilga/detail/macros.hpp>
 
-namespace vilga_detail VILGA_EXPORT {
+namespace vilga_detail {
 
 class memory_block_t {
 public:

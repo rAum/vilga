@@ -5,7 +5,7 @@
 #include <string>
 #include <vilga/detail/macros.hpp>
 
-namespace vilga_detail VILGA_EXPORT {
+namespace vilga_detail {
 
 struct backend_config {
   std::string zmq_protocol; // FIXME: leaking implementation detail.
